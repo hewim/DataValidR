@@ -102,7 +102,7 @@ a_1 <- yMean - b_1* xMean
 ## Ergebnis: `r datafile`
 
 |  |  |  |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Mittelwert x | $`r xMean`$ | `r xEinheit` |
 | Mittelwert y | $`r signif(yMean, digits=4)`$ | `r yEinheit` |
 | Fehlerquadratsumme Qxx | $`r Qxx`$ | (`r xEinheit`)² |
