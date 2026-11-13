@@ -1,0 +1,111 @@
+---
+title: "Aufgabe A"
+author: "H. Wimmer"
+format: docx
+editor: visual
+lang: de
+---
+
+```{r}
+#| label: load-data
+#| message: false
+#| output: false
+#| echo: false
+
+# Paket fuer richtigen Pfad
+library(here)
+
+# heutiges Datum
+today <- format(Sys.Date(), format = "%d.%m.%Y") # heutiges Datum
+
+# Autor für Ausdrucke
+author <- "BioAB29V"
+
+# Dateiname
+datafile <- "experiment_1"
+
+# Einheit der x-Variable
+xEinheit <- "mg/dL"
+
+# Einheit der y-Variable
+yEinheit <- "E"
+
+# Einlesen der csv-Datei
+source(here("R/00100_import_csv.R"))
+```
+
+### Arithmetischer Mittelwert
+
+Der arithmetische Mittelwert (oft auch „arithmetisches Mittel“ oder nur „Mittelwert“ genannt) der Stichprobe ist der bekannteste Lageparameter und Schätzer für μ, den Mittelwert der Grundgesamtheit. Er wird gebildet, indem man alle Ausprägungen aufsummiert und durch die Gesamtzahl von Ausprägungen teilt.
+
+- Ein Vorteil des Mittelwerts ist, dass er sensitiv hinsichtlich jedes einzelnen Werts ist.
+
+- Das bedeutet, dass wenn sich ein Wert ändert, sich auch der Mittelwert ändert.
+
+- Aufgrund dieser Eigenschaft ist der Mittelwert ein guter Schätzer des Zentrums einer Verteilung.
+
+- Dadurch, dass der Mittelwert sehr sensitiv hinsichtlich jeden Werts ist, kann er auch stark beeinflusst werden durch Ausreißer.
+
+Für die Beobachtungen x~1~, x~2~, . . . , x~n~ sieht das arithmetische Mittel $\bar{x}$ folgendermaßen aus:
+
+$$
+\bar{x}=\frac{1}{n}\cdot\sum_{i=1}^{n} x_{i}
+$$ {#eq-mean}
+
+### Berechnung in R
+
+```{r}
+#| label: xMean
+
+# Stichprobenanzahl mit Funktion nrow()
+n <- nrow(dataset)
+
+# Mittelwert der Konzentrationen mittels Funktion sum() des Vektors des
+# data.frame dataset
+xMean <- sum(dataset$x) / n
+
+# Mittelwert der Extinktionen mit der Funktion mean()
+yMean <- mean(dataset$y)
+```
+
+Der Mittelwert (@eq-mean) der x-Werte aus dem Datensatz `r datafile` beträgt `r xMean` `r xEinheit`, der Mittelwert der y-Werte ist `r yMean` `r yEinheit`.
+
+```{r}
+#| label: Qxx
+
+# Fehlerquadratsumme Qxx auch SSxx
+Qxx <- sum((dataset$x - xMean) ^ 2)
+```
+
+```{r}
+#| label: Qxy
+
+# Produktsumme Qxy auch SSxy
+Qxy <- sum((dataset$x - xMean) * (dataset$y - yMean))
+```
+
+```{r}
+#| label: b_1
+#| echo: false
+
+# Steigung der Kalibrierfunktion b_1 = cov/var
+b_1 <- Qxy / Qxx
+```
+
+```{r}
+#| label: a_1
+
+# Achsenschnittpunkt der Kalibrierfunktion, Intercept
+a_1 <- yMean - b_1* xMean
+```
+
+## Ergebnis: `r datafile`
+
+|  |  |  |
+|------------------------|------------------------|------------------------|
+| Mittelwert x | $`r xMean`$ | `r xEinheit` |
+| Mittelwert y | $`r signif(yMean, digits=4)`$ | `r yEinheit` |
+| Fehlerquadratsumme Qxx | $`r Qxx`$ | (`r xEinheit`)² |
+| Produktsumme Qxy | $`r Qxy`$ | `r xEinheit` \* `r yEinheit` |
+| Steigung b_1 | $`r signif(b_1, digits=4)`$ | `r yEinheit` / `r xEinheit` |
+| Achsenschnittpunkt a_1 | $`r signif(a_1, digits=4)`$ | `r yEinheit` |
